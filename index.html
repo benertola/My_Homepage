@@ -17,12 +17,13 @@
       <span>Quick Links</span>
     </div>
     <div class="widget-body">
-      <ul id="links-list"></ul>
+      <div id="links-container"></div>
       <div class="add-row">
         <input id="link-name-input" type="text" placeholder="Label" />
         <input id="link-url-input" type="text" placeholder="https://..." />
         <button id="link-add-btn">Add</button>
       </div>
+      <button id="links-add-category-btn">+ Add category</button>
     </div>
   </div>
 
@@ -60,11 +61,12 @@
       <span>To-Do</span>
     </div>
     <div class="widget-body">
-      <ul id="todo-list"></ul>
+      <div id="todo-container"></div>
       <div class="add-row">
         <input id="todo-input" type="text" placeholder="New task..." />
         <button id="todo-add-btn">Add</button>
       </div>
+      <button id="todo-add-category-btn">+ Add category</button>
     </div>
   </div>
 
@@ -76,6 +78,48 @@
     <div class="widget-body">
       <div id="wc-content">Loading matches...</div>
     </div>
+  </div>
+
+  <!-- Markets Widget -->
+  <div class="widget" id="widget-markets">
+    <div class="widget-header">
+      <span>💹 Markets</span>
+    </div>
+    <div class="widget-body">
+      <div id="markets-content">Loading...</div>
+      <div id="markets-updated"></div>
+    </div>
+  </div>
+
+  <!-- Theme Picker -->
+  <button id="theme-btn" title="Change theme">🎨</button>
+  <div id="theme-panel" class="hidden">
+    <h3>Theme</h3>
+    <div class="theme-swatches">
+      <button class="theme-swatch" data-theme="istanbul">
+        <div class="theme-swatch-preview" style="background: linear-gradient(135deg,#1e2130,#252840);"></div>
+        <span>Istanbul</span>
+      </button>
+      <button class="theme-swatch" data-theme="midnight">
+        <div class="theme-swatch-preview" style="background: linear-gradient(135deg,#0d0d1a,#14142a);"></div>
+        <span>Midnight</span>
+      </button>
+      <button class="theme-swatch" data-theme="ocean">
+        <div class="theme-swatch-preview" style="background: linear-gradient(135deg,#041c2c,#0a2640);"></div>
+        <span>Ocean</span>
+      </button>
+      <button class="theme-swatch" data-theme="forest">
+        <div class="theme-swatch-preview" style="background: linear-gradient(135deg,#051a08,#0a1e0c);"></div>
+        <span>Forest</span>
+      </button>
+      <button class="theme-swatch" data-theme="sunset">
+        <div class="theme-swatch-preview" style="background: linear-gradient(135deg,#2a0a20,#260c24);"></div>
+        <span>Sunset</span>
+      </button>
+    </div>
+    <div class="theme-divider"></div>
+    <button id="theme-upload-btn">📁 Upload photo</button>
+    <input id="theme-upload-input" type="file" accept="image/*" style="display:none">
   </div>
 
   <script src="app.js"></script>
