@@ -184,10 +184,13 @@ function saveWeatherConfig(city, key) {
   localStorage.setItem('weather-key', key);
 }
 
+const DEFAULT_WEATHER_CITY = 'Istanbul';
+const DEFAULT_WEATHER_KEY = '584435ad97e6b22eb268b65743c9d42b';
+
 function loadWeatherConfig() {
   return {
-    city: localStorage.getItem('weather-city') || '',
-    key: localStorage.getItem('weather-key') || '',
+    city: localStorage.getItem('weather-city') || DEFAULT_WEATHER_CITY,
+    key: localStorage.getItem('weather-key') || DEFAULT_WEATHER_KEY,
   };
 }
 
