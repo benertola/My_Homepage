@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Homepage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+</head>
+<body>
+
+  <!-- Links Widget -->
+  <div class="widget" id="widget-links">
+    <div class="widget-header">
+      <span>Quick Links</span>
+    </div>
+    <div class="widget-body">
+      <ul id="links-list"></ul>
+      <div class="add-row">
+        <input id="link-name-input" type="text" placeholder="Label" />
+        <input id="link-url-input" type="text" placeholder="https://..." />
+        <button id="link-add-btn">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weather Widget -->
+  <div class="widget" id="widget-weather">
+    <div class="widget-header">
+      <span>Weather</span>
+    </div>
+    <div class="widget-body">
+      <div id="weather-display">
+        <div id="weather-setup">
+          <p>Enter your city and API key to get started.</p>
+          <input id="weather-city-input" type="text" placeholder="City name" />
+          <input id="weather-key-input" type="text" placeholder="OpenWeatherMap API key" />
+          <button id="weather-save-btn">Save</button>
+          <p class="hint">Get a free API key at <a href="https://openweathermap.org" target="_blank">openweathermap.org</a></p>
+        </div>
+        <div id="weather-data" class="hidden">
+          <div id="weather-icon-temp">
+            <img id="weather-icon" src="" alt="" />
+            <span id="weather-temp"></span>
+          </div>
+          <div id="weather-desc"></div>
+          <div id="weather-city-name"></div>
+          <button id="weather-change-btn">Change city</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- To-Do Widget -->
+  <div class="widget" id="widget-todo">
+    <div class="widget-header">
+      <span>To-Do</span>
+    </div>
+    <div class="widget-body">
+      <ul id="todo-list"></ul>
+      <div class="add-row">
+        <input id="todo-input" type="text" placeholder="New task..." />
+        <button id="todo-add-btn">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- World Cup 2026 Widget -->
+  <div class="widget" id="widget-worldcup">
+    <div class="widget-header">
+      <span>⚽ World Cup 2026</span>
+    </div>
+    <div class="widget-body">
+      <div id="wc-content">Loading matches...</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

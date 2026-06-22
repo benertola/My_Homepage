@@ -1,0 +1,388 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: url('istanbul-bosphorus-guide_a707026e-3ddf-4e2c-af74-64737a991c9d.jpg') center center / cover no-repeat fixed;
+  color: #e2e8f0;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Widget shell ── */
+.widget {
+  position: absolute;
+  width: 300px;
+  min-width: 200px;
+  min-height: 80px;
+  background: #1e2130;
+  border: 1px solid #2d3148;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.widget .resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  cursor: se-resize;
+  background: linear-gradient(135deg, transparent 50%, #4a5080 50%);
+  border-bottom-right-radius: 12px;
+}
+
+.widget-header {
+  background: #252840;
+  padding: 10px 14px;
+  border-radius: 12px 12px 0 0;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-header:active {
+  cursor: grabbing;
+}
+
+.widget-body {
+  padding: 14px;
+  user-select: text;
+}
+
+/* ── Links widget ── */
+#links-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+#links-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#links-list a {
+  color: #7c9fff;
+  text-decoration: none;
+  font-size: 14px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#links-list a:hover {
+  color: #a8c0ff;
+  text-decoration: underline;
+}
+
+/* ── To-Do widget ── */
+#todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+#todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+#todo-list li input[type="checkbox"] {
+  accent-color: #7c9fff;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+#todo-list li label {
+  flex: 1;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+#todo-list li.done label {
+  text-decoration: line-through;
+  color: #475569;
+}
+
+/* ── Shared add-row ── */
+.add-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.add-row input {
+  flex: 1;
+  min-width: 0;
+  background: #0f1117;
+  border: 1px solid #2d3148;
+  border-radius: 6px;
+  color: #e2e8f0;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.add-row input:focus {
+  outline: none;
+  border-color: #7c9fff;
+}
+
+.add-row button, button {
+  background: #3b5bdb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.add-row button:hover, button:hover {
+  background: #4c6ef5;
+}
+
+/* ── Delete button ── */
+.delete-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.delete-btn:hover {
+  color: #f87171;
+  background: none;
+}
+
+.link-name-edit {
+  background: #1e2a3a;
+  border: 1px solid #7c9fff;
+  border-radius: 4px;
+  color: #e0e8ff;
+  font-size: 0.95rem;
+  padding: 2px 6px;
+  width: 120px;
+  outline: none;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+
+#links-list li:hover .edit-btn,
+#todo-list li:hover .edit-btn {
+  opacity: 1;
+}
+
+/* ── Weather widget ── */
+#weather-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#weather-setup p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+#weather-setup input {
+  background: #0f1117;
+  border: 1px solid #2d3148;
+  border-radius: 6px;
+  color: #e2e8f0;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+#weather-setup input:focus {
+  outline: none;
+  border-color: #7c9fff;
+}
+
+.hint {
+  font-size: 11px !important;
+  color: #475569 !important;
+}
+
+.hint a {
+  color: #7c9fff;
+}
+
+#weather-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+#weather-icon-temp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#weather-temp {
+  font-size: 36px;
+  font-weight: 600;
+}
+
+#weather-icon {
+  width: 52px;
+  height: 52px;
+}
+
+#weather-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  text-transform: capitalize;
+}
+
+#weather-city-name {
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+#weather-change-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ── World Cup Widget ── */
+#widget-worldcup {
+  width: 340px;
+}
+
+#wc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.wc-day-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7c9fff;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.wc-match {
+  background: #0f1117;
+  border: 1px solid #2d3148;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wc-teams {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wc-team {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+.wc-flag {
+  width: 18px;
+  height: 13px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.wc-vs {
+  font-size: 10px;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.wc-status {
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.wc-time   { color: #94a3b8; }
+.wc-live   { color: #4ade80; animation: pulse 1.5s infinite; }
+.wc-score  { color: #e2e8f0; }
+.wc-ended  { color: #475569; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.wc-none {
+  font-size: 13px;
+  color: #475569;
+  text-align: center;
+  padding: 12px 0;
+}
