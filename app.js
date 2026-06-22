@@ -201,8 +201,12 @@ async function fetchWeather(city, key) {
   return res.json();
 }
 
+let lastWeatherData = null;
+
 function showWeatherData(data) {
+  lastWeatherData = data;
   document.getElementById('weather-setup').classList.add('hidden');
+  document.getElementById('weather-cancel-btn').classList.add('hidden');
   document.getElementById('weather-data').classList.remove('hidden');
   document.getElementById('weather-temp').textContent = Math.round(data.main.temp) + '°C';
   document.getElementById('weather-desc').textContent = data.weather[0].description;
@@ -235,6 +239,11 @@ async function initWeather() {
 
   document.getElementById('weather-change-btn').addEventListener('click', () => {
     showWeatherSetup();
+    document.getElementById('weather-cancel-btn').classList.remove('hidden');
+  });
+
+  document.getElementById('weather-cancel-btn').addEventListener('click', () => {
+    showWeatherData(lastWeatherData);
   });
 
   if (city && key) {
