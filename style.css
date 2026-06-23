@@ -669,10 +669,95 @@ body {
 .market-change.down    { color: #f87171; }
 .market-change.neutral { color: var(--text-muted); }
 
+#markets-refresh-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+#markets-refresh-btn:hover {
+  color: var(--accent);
+  background: none;
+}
+
+#markets-refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 #markets-updated {
   font-size: 10px;
   color: var(--text-muted);
   text-align: right;
+}
+
+/* ── Minimize button ── */
+.minimize-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.minimize-btn:hover {
+  color: var(--accent);
+  background: rgba(255,255,255,0.06);
+}
+/* when another button follows (e.g. markets refresh), only the first minimize-btn pushes to right */
+.widget-header button:not(.minimize-btn) {
+  margin-left: 0;
+}
+#markets-refresh-btn {
+  margin-left: 0 !important;
+}
+
+/* ── Taskbar ── */
+#taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  transition: padding 0.2s;
+}
+#taskbar:empty {
+  padding: 0;
+}
+.taskbar-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--widget-header-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+  white-space: nowrap;
+}
+.taskbar-chip:hover {
+  background: var(--accent-btn);
+  border-color: var(--accent);
 }
 
 /* ── Theme Picker ── */

@@ -7,8 +7,18 @@ const DEFAULT_POSITIONS = {
   'widget-markets':   { x: 380, y: 320 },
 };
 
+// ── Z-index / bring to front ──
+let topZ = 10;
+function bringToFront(el) {
+  el.style.zIndex = ++topZ;
+}
+
 // ── Drag & Drop (interact.js) ──
 function initDrag() {
+  document.querySelectorAll('.widget').forEach(w => {
+    w.addEventListener('mousedown', () => bringToFront(w));
+  });
+
   interact('.widget')
     .draggable({
       listeners: {
@@ -824,25 +834,40 @@ async function initWorldCup() {
 }
 
 // ── Markets Widget ──
-const MARKET_ASSETS = [
-  { key: 'btc', label: 'Bitcoin',  icon: '₿', decimals: 0 },
-  { key: 'xau', label: 'Gold',     icon: '🟡', decimals: 0, unit: '/oz' },
-  { key: 'xag', label: 'Silver',   icon: '⚪', decimals: 1, unit: '/oz' },
-  { key: 'usd', label: 'USD',      icon: '💵', decimals: 4 },
-];
+const METALPRICEAPI_KEY = '41f8e1c4739b606ec27a732718e67d4f';
+const TROY_OZ_TO_GRAM = 31.1035;
 
-async function fetchMarkets() {
-  const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/try.min.json');
-  if (!res.ok) throw new Error('fetch failed');
-  return res.json();
+function loadMarketCache() {
+  return JSON.parse(localStorage.getItem('markets-cache') || 'null');
+}
+function saveMarketCache(data) {
+  localStorage.setItem('markets-cache', JSON.stringify(data));
+}
+function todayStr() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
 }
 
-function saveMarketSnapshot(date, rates) {
-  localStorage.setItem('markets-snapshot', JSON.stringify({ date, rates }));
-}
+async function fetchAllMarketData() {
+  const [metalsRes, btcRes] = await Promise.all([
+    fetch(`https://api.metalpriceapi.com/v1/latest?api_key=${METALPRICEAPI_KEY}&base=USD&currencies=XAU,XAG,TRY`),
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=try'),
+  ]);
 
-function loadMarketSnapshot() {
-  return JSON.parse(localStorage.getItem('markets-snapshot') || 'null');
+  if (!metalsRes.ok || !btcRes.ok) throw new Error('API error');
+  const [metals, btc] = await Promise.all([metalsRes.json(), btcRes.json()]);
+  if (!metals.success) throw new Error(metals.error?.info || 'Metals API error');
+
+  const usdTry = metals.rates.TRY;
+  const goldTry  = (1 / metals.rates.XAU) * usdTry / TROY_OZ_TO_GRAM;
+  const silverTry = (1 / metals.rates.XAG) * usdTry / TROY_OZ_TO_GRAM;
+
+  return {
+    date: todayStr(),
+    usdTry,
+    goldTry,
+    silverTry,
+    btcTry: btc.bitcoin.try,
+  };
 }
 
 function formatTRY(val, decimals) {
@@ -851,51 +876,125 @@ function formatTRY(val, decimals) {
   return '₺' + val.toFixed(decimals);
 }
 
-function renderMarkets(todayRates, prevRates, date) {
-  const content = document.getElementById('markets-content');
-  const updated = document.getElementById('markets-updated');
+function renderMarkets(current, prev) {
+  const rows = [
+    { icon: '₿',  label: 'Bitcoin', val: current.btcTry,    prevVal: prev?.btcTry,    decimals: 0 },
+    { icon: '🟡', label: 'Gold',    val: current.goldTry,   prevVal: prev?.goldTry,   decimals: 2, unit: '/g' },
+    { icon: '⚪', label: 'Silver',  val: current.silverTry, prevVal: prev?.silverTry, decimals: 2, unit: '/g' },
+    { icon: '💵', label: 'USD',     val: current.usdTry,    prevVal: prev?.usdTry,    decimals: 2 },
+  ];
 
-  content.innerHTML = MARKET_ASSETS.map(asset => {
-    // rates are TRY per 1 unit → invert (1 / try_per_unit = units_per_try → invert again)
-    const tryPerUnit = 1 / todayRates[asset.key];
-    const prev = prevRates ? (1 / prevRates[asset.key]) : null;
-    const change = prev ? ((tryPerUnit - prev) / prev) * 100 : null;
-
+  document.getElementById('markets-content').innerHTML = rows.map(row => {
+    const change = row.prevVal ? ((row.val - row.prevVal) / row.prevVal) * 100 : null;
     const changeHtml = change !== null
       ? `<span class="market-change ${change >= 0 ? 'up' : 'down'}">${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%</span>`
       : `<span class="market-change neutral">—</span>`;
-
     return `
       <div class="market-row">
-        <span class="market-icon">${asset.icon}</span>
-        <span class="market-label">${asset.label}${asset.unit ? '<small>' + asset.unit + '</small>' : ''}</span>
-        <span class="market-price">${formatTRY(tryPerUnit, asset.decimals)}</span>
+        <span class="market-icon">${row.icon}</span>
+        <span class="market-label">${row.label}${row.unit ? `<small>${row.unit}</small>` : ''}</span>
+        <span class="market-price">${formatTRY(row.val, row.decimals)}</span>
         ${changeHtml}
       </div>`;
   }).join('');
 
-  updated.textContent = 'Updated: ' + date;
+  document.getElementById('markets-updated').textContent = 'Updated: ' + current.date;
 }
 
-async function initMarkets() {
+async function refreshMarkets(force = false) {
+  const btn = document.getElementById('markets-refresh-btn');
+  btn.textContent = '⏳';
+  btn.disabled = true;
   try {
-    const data = await fetchMarkets();
-    const todayDate = data.date;
-    const todayRates = data.try;
-
-    const snap = loadMarketSnapshot();
-    const prevRates = (snap && snap.date !== todayDate) ? snap.rates : null;
-
-    renderMarkets(todayRates, prevRates, todayDate);
-
-    if (!snap || snap.date !== todayDate) {
-      const yesterday = snap ? snap.rates : null;
-      saveMarketSnapshot(todayDate, todayRates);
-      if (yesterday) renderMarkets(todayRates, yesterday, todayDate);
+    const cache = loadMarketCache();
+    const isStale = !cache || cache.date !== todayStr();
+    if (!force && !isStale) {
+      renderMarkets(cache, null);
+      return;
     }
-  } catch {
+    const fresh = await fetchAllMarketData();
+    const prev = (cache && cache.date !== fresh.date) ? cache : null;
+    saveMarketCache(fresh);
+    renderMarkets(fresh, prev);
+  } catch (e) {
     document.getElementById('markets-content').textContent = 'Could not load market data.';
+  } finally {
+    btn.textContent = '↻';
+    btn.disabled = false;
   }
+}
+
+function initMarkets() {
+  document.getElementById('markets-refresh-btn').addEventListener('click', () => refreshMarkets(true));
+  refreshMarkets(false);
+}
+
+// ── Minimize / Taskbar ──
+const WIDGET_LABELS = {
+  'widget-links':    'Quick Links',
+  'widget-weather':  'Weather',
+  'widget-todo':     'To-Do',
+  'widget-worldcup': '⚽ World Cup',
+  'widget-markets':  '💹 Markets',
+};
+
+function getMinimized() {
+  return JSON.parse(localStorage.getItem('minimized-widgets') || '[]');
+}
+function setMinimized(ids) {
+  localStorage.setItem('minimized-widgets', JSON.stringify(ids));
+}
+
+function minimizeWidget(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'none';
+
+  const minimized = getMinimized();
+  if (!minimized.includes(id)) minimized.push(id);
+  setMinimized(minimized);
+
+  renderTaskbar();
+}
+
+function restoreWidget(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = '';
+
+  const minimized = getMinimized().filter(x => x !== id);
+  setMinimized(minimized);
+
+  renderTaskbar();
+}
+
+function renderTaskbar() {
+  const taskbar = document.getElementById('taskbar');
+  const minimized = getMinimized();
+  taskbar.innerHTML = minimized.map(id => {
+    const label = WIDGET_LABELS[id] || id;
+    return `<button class="taskbar-chip" data-widget-id="${id}">${label}</button>`;
+  }).join('');
+  taskbar.querySelectorAll('.taskbar-chip').forEach(chip => {
+    chip.addEventListener('click', () => restoreWidget(chip.dataset.widgetId));
+  });
+}
+
+function initMinimize() {
+  document.querySelectorAll('.minimize-btn').forEach(btn => {
+    const widget = btn.closest('.widget');
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      minimizeWidget(widget.id);
+    });
+  });
+
+  // restore previously minimized widgets on page load
+  getMinimized().forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  renderTaskbar();
 }
 
 // ── Theme ──
@@ -968,3 +1067,4 @@ initTodo();
 initWorldCup();
 initTheme();
 initMarkets();
+initMinimize();
